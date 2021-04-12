@@ -7,11 +7,12 @@ import './libs/echarts';
 import App from './App.vue';
 import router from './router';
 import store from './store';
+import comps from '../components';
 
 const app = createApp(App);
 // app.config.globalProperties._ = _; // 挂载loadsh
 // app.provide('_', _);
 window._ = _;
-installComp(app);
+app.use(comps);
 app.use(router).use(store).use(ElementPlus);
 app.mount('#app');
