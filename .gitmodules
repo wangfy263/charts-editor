@@ -1,3 +1,6 @@
 [submodule "bi-report-components"]
 	path = bi-report-components
 	url = git@10.52.8.134:wangfy/bi-report-components.git
+[submodule "components"]
+	path = components
+	url = git@github.com:wangfy263/charts-components.git
