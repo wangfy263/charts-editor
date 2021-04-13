@@ -6,7 +6,7 @@
         <p class="title">组件列表</p>
         <div>
           <el-collapse v-model="activeCollapse" accordion style="margin-left: 20px">
-            <el-collapse-item :title="type.name" :name="index" v-for="(type, index) in comps">
+            <el-collapse-item :title="type.name" :name="index" v-for="(type, index) in comps" :key="index">
               <el-row style="height: calc(100%-450px)">
                 <el-col :span="12" v-for="comp in type.components">
                   <img :src="`../../../components/images/${type.prop}/${comp.option.img}.png`" class="report-icon" @click="checkComp(comp)" />
@@ -89,7 +89,7 @@ export default {
   setup() {
     /* 选中组件 */
     const active = ref(-1);
-    const activeCollapse = ref(0);
+    const activeCollapse = ref(1);
     const propsObj = reactive({
       activeObj: {},
     });
