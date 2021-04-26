@@ -5,8 +5,8 @@
       <span class="token-value">{{ token.name }}</span>
       <span class="token-value" :title="token.getTokenValue()">{{ token.getTokenValue() }}</span>
       <span class="token-opt">
-        <el-button type="text" size="mini" icon="el-icon-edit" @click="toEdit(token.getId())"></el-button>
-        <el-button type="text" size="mini" icon="el-icon-delete" @click="del(token.getId())"></el-button>
+        <el-button type="text" size="mini" icon="el-icon-edit" @click="toEdit(index)"></el-button>
+        <el-button type="text" size="mini" icon="el-icon-delete" @click="del(index)"></el-button>
       </span>
     </p>
     <div class="add-token"><el-button type="primary" size="medium" class="block" @click="toAdd()">添加token</el-button></div>
@@ -55,12 +55,13 @@
 </template>
 <script>
 import { ref, reactive, computed } from 'vue';
-// import Token from './Token.js';
-import { createToken, updateToken, delToken, getTokens, getTokenById, tokenToJson, refreshToken } from './TokenUtil'
+import { useStore } from 'vuex';
+import Token from './Token.js';
 
 export default {
   setup() {
-    const tokens = getTokens();
+    const store = useStore(); // Vuex属性
+    const tokens = computed(() => store.getters.tokens);
     const visible = ref(false);
     const title = ref('新增token');
     const form = reactive({
@@ -109,17 +110,17 @@ export default {
       form.expCycle = 3600000;
       form.formatter = '(res) => res';
     };
-    const toEdit = id => {
+    const toEdit = index => {
       title.value = '修改TOKEN';
       visible.value = true;
-      const token = getTokenById(id);
+      const token = tokens.value[index];
       form.id = token.getId();
       form.name = token.name;
       form.url = token.url;
       form.type = token.getType();
       form.method = token.method;
       form.token = token.getType() === 0 ? token.getTokenValue() : '';
-      form.param = token.param;
+      form.param = JSON.stringify(token.param);
       form.expCycle = token.expCycle;
       form.formatter = token.formatter;
     };

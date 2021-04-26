@@ -12,7 +12,7 @@ const Token = function (obj) {
         this.url = url || ''; // 动态token获取url
         this.method = method || '';
         this.param = param || {};
-        this.formatter = formatter || '';
+        this.formatter = formatter || new Function('res', 'return res');
         this.expCycle = expCycle || 60 * 60 * 1000;
         _id = id;
         _type = type;
@@ -53,7 +53,6 @@ const Token = function (obj) {
           }
         });
       }
-
       getNewToken() {
         return new Promise(resolve => {
           let params = {};
@@ -81,7 +80,6 @@ const Token = function (obj) {
           }
         });
       }
-
       setStaticToken(token) {
         _token = token;
       }
