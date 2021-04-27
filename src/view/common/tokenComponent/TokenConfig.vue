@@ -125,32 +125,15 @@ export default {
     };
     const add = () => {
       if (form.id) {
-        const token = tokens.value.filter(item => item.getId() === form.id)[0];
-        token.name = form.name;
-        token.url = form.url;
-        token.method = form.method;
-        token.param = JSON.parse(form.param);
-        token.formatter = form.formatter;
-        token.setType(form.type);
-        if (token.getType() === 0) {
-          token.setStaticToken(form.token);
-          token.setExpTime('never');
-        }
-        if (token.getType() === 1) {
-          token.setStaticToken('');
-          token.setExpTime(new Date().getTime());
-        }
+        updateToken(form);
       } else {
         const obj = JSON.parse(JSON.stringify(form));
-        obj.param = JSON.parse(obj.param);
-        obj.id = (Math.random() * 1000).toFixed(0) + new Date().getTime();
-        const token = new Token(obj);
-        store.commit('ADD_TOKEN', token);
+        createToken(obj);
       }
       visible.value = false;
     };
-    const del = index => {
-      store.commit('DEL_TOKEN', index);
+    const del = id => {
+      delToken(id);
     };
     const getNewToken = () => {
       add();

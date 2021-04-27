@@ -2,7 +2,7 @@ import Token from './Token';
 
 const tokens = [];
 
-export function createToken({ name, type, url, method, param = {}, formatter = resp => resp, expCycle, token }) {
+export function createToken({ name, type, url, method, param = {}, formatter = 'resp => resp', expCycle = 0, token }) {
   if (!name) {
     console.error('名称不能为空');
     return null;
@@ -16,33 +16,50 @@ export function createToken({ name, type, url, method, param = {}, formatter = r
     url = '';
     method = '';
     param = {};
-    formatter = resp => resp;
+    formatter = 'resp => resp';
+    expCycle = 0;
   }
   // 格式化入参
   try {
     if (typeof param === 'string') {
-      param = JSON.parse(param);
+      JSON.parse(param);
     }
   } catch (e) {
     console.error('参数JSON格式不正确,请检查！');
     return false;
   }
   // 格式化响应处理函数
-  try {
-    if (typeof formatter === 'string') {
-      formatter = new Function('resp', formatter);
+  if (typeof formatter === 'string') {
+    const fn = eval(formatter);
+    if(typeof fn !== 'function') {
+      console.error('响应处理函数格式不正确,请检查！');
+      return false;
     }
-  } catch (e) {
-    console.error('响应处理函数格式不正确,请检查！');
-    return false;
+  }
+  // 超时设置
+  let exp = 0;
+  if (type === 1) {
+    const expCycleType = typeof expCycle;
+    if (expCycle === 'never' || expCycleType === 'number') {
+      exp = expCycle || 'never'; // 设置为0时，也重置为never.
+    } else if(expCycleType === 'string') {
+      exp = parseInt(expCycle, 10);
+    } else {
+      exp = NaN;
+    }
+    // 验证格式
+    if(isNaN(exp)) {
+      console.error('超时时间设置不正确，请检查！');
+      return false;
+    }
   }
   const id = (Math.random() * 1000).toFixed(0) + new Date().getTime();
-  const t = new Token({ id, name, type, url, method, param, formatter, expCycle, token });
+  const t = new Token({ id, name, type, url, method, param, formatter, exp, token });
   tokens.push(t);
   return id;
 }
 
-export function updateToken({ id, name, type, url, method, param = {}, formatter = resp => resp, expCycle, token }) {
+export function updateToken({ id, name, type, url, method, param = {}, formatter = 'resp => resp', expCycle = 0, token }) {
   if (!id) {
     console.error('修改token, 必须传id!');
     return false;
@@ -60,25 +77,42 @@ export function updateToken({ id, name, type, url, method, param = {}, formatter
     url = '';
     method = '';
     param = {};
+    expCycle = 0;
     formatter = resp => resp;
   }
   // 格式化入参
   try {
     if (typeof param === 'string') {
-      param = JSON.parse(param);
+      JSON.parse(param);
     }
   } catch (e) {
     console.error('参数JSON格式不正确,请检查！');
     return false;
   }
   // 格式化响应处理函数
-  try {
-    if (typeof formatter === 'string') {
-      formatter = new Function('resp', formatter);
+  if (typeof formatter === 'string') {
+    const fn = eval(formatter);
+    if (typeof fn !== 'function') {
+      console.error('响应处理函数格式不正确,请检查！');
+      return false;
     }
-  } catch (e) {
-    console.error('响应处理函数格式不正确,请检查！');
-    return false;
+  }
+  // 超时设置
+  let exp = 0;
+  if (type === 1) {
+    const expCycleType = typeof expCycle;
+    if (expCycle === 'never' || expCycleType === 'number') {
+      exp = expCycle || 'never'; // 设置为0时，也重置为never.
+    } else if (expCycleType === 'string') {
+      exp = parseInt(expCycle, 10);
+    } else {
+      exp = NaN;
+    }
+    // 验证格式
+    if (isNaN(exp)) {
+      console.error('超时时间设置不正确，请检查！');
+      return false;
+    }
   }
   const t = tokens.filter(item => item.getId() === id)[0];
   t.name = name;
@@ -93,7 +127,7 @@ export function updateToken({ id, name, type, url, method, param = {}, formatter
   }
   if (t.getType() === 1) {
     t.setStaticToken('');
-    t.setExpTime(new Date().getTime());
+    t.setExpTime(exp);
   }
   return true;
 }

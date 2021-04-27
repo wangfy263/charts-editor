@@ -56,11 +56,10 @@ const Token = function (obj) {
       getNewToken() {
         return new Promise(resolve => {
           let params = {};
-          const formatter = this.formatter
-            ? eval(this.formatter)
-            : function (res) {
-                return res;
-              };
+          const formatter = eval(this.formatter);
+          if (typeof this.param === 'string') {
+            params = Object.assign({}, JSON.parse(this.param));
+          }
           if (typeof this.param === 'object') {
             params = Object.assign({}, this.param);
           }
