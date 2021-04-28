@@ -54,9 +54,9 @@
   </div>
 </template>
 <script>
-import { ref, reactive, computed } from 'vue';
+import { ref, reactive, computed, nextTick } from 'vue';
 // import Token from './Token.js';
-import { createToken, updateToken, delToken, getTokens, getTokenById, tokenToJson, refreshToken } from './TokenUtil'
+import { createToken, updateToken, delToken, getTokens, getTokenById, tokenToJson, refreshToken, checkTokenEquals } from './TokenUtil';
 
 export default {
   setup() {
@@ -136,13 +136,18 @@ export default {
     };
     const del = id => {
       console.log(id);
-      state.tokens.splice(0, 1, ...delToken(id));
-      console.log(state.tokens);
+      state.tokens = [];
+      state.tokens = delToken(id);
     };
     const getNewToken = () => {
-      add();
-      // console.log(form.id)
-      state.tokens = refreshToken(form.id);
+      console.log(checkTokenEquals(form));
+      if (!checkTokenEquals(form)) {
+        updateToken(form);
+      }
+      refreshToken(form.id).then(res => {
+        state.tokens = res;
+        visible.value = false;
+      })
     };
     const toJson = tokenToJson();
     return {

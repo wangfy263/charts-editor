@@ -1,6 +1,6 @@
 import Token from './Token';
 
-const tokens = [];
+const _tokens = [];
 
 export function createToken({ name, type, url, method, param = {}, formatter = 'resp => resp', expCycle = 0, token }) {
   if (!name) {
@@ -15,7 +15,7 @@ export function createToken({ name, type, url, method, param = {}, formatter = '
   if (type === 0) {
     url = '';
     method = '';
-    param = {};
+    param = '{}';
     formatter = 'resp => resp';
     expCycle = 0;
   }
@@ -55,11 +55,11 @@ export function createToken({ name, type, url, method, param = {}, formatter = '
   }
   const id = (Math.random() * 1000).toFixed(0) + new Date().getTime();
   const t = new Token({ id, name, type, url, method, param, formatter, exp, token });
-  tokens.push(t);
-  return tokens;
+  _tokens.push(t);
+  return _tokens;
 }
 
-export function updateToken({ id, name, type, url, method, param = {}, formatter = 'resp => resp', expCycle = 0, token }) {
+export function updateToken({ id, name, type, url, method, param = '{}', formatter = 'resp => resp', expCycle = 0, token }) {
   if (!id) {
     console.error('修改token, 必须传id!');
     return false;
@@ -76,7 +76,7 @@ export function updateToken({ id, name, type, url, method, param = {}, formatter
   if (type === 0) {
     url = '';
     method = '';
-    param = {};
+    param = '{}';
     expCycle = 0;
     formatter = resp => resp;
   }
@@ -114,7 +114,7 @@ export function updateToken({ id, name, type, url, method, param = {}, formatter
       return false;
     }
   }
-  const t = tokens.filter(item => item.getId() === id)[0];
+  const t = _tokens.filter(item => item.getId() === id)[0];
   t.name = name;
   t.url = url;
   t.method = method;
@@ -129,7 +129,7 @@ export function updateToken({ id, name, type, url, method, param = {}, formatter
     t.setStaticToken('');
     t.setExpTime(exp);
   }
-  return tokens;
+  return _tokens;
 }
 
 export function delToken(id) {
@@ -137,20 +137,19 @@ export function delToken(id) {
     console.error('删除token, 必须传id!');
     return false;
   }
-  const index = tokens.map(item => item.getId()).indexOf(id);
-  console.log(index);
+  const index = _tokens.map(item => item.getId()).indexOf(id);
   if (index >= 0) {
-    tokens.splice(index, 1);
+    _tokens.splice(index, 1);
   }
-  return tokens;
+  return _tokens;
 }
 
 export function getTokens() {
-  return tokens;
+  return _tokens;
 }
 
 export function getTokenById(id) {
-  return tokens.filter(item => item.getId() === id)[0];
+  return _tokens.filter(item => item.getId() === id)[0];
 }
 
 export function initTokenStr(tokenJson) {
@@ -158,22 +157,40 @@ export function initTokenStr(tokenJson) {
     const tokenList = JSON.parse(tokenJson);
     tokenList.forEach(item => {
       const token = new Token(item);
-      tokens.push(token);
+      _tokens.push(token);
     });
-    return tokens;
+    return _tokens;
   } catch (e) {
     console.error('tokenJson格式错误！');
   }
 }
 
 export function tokenToJson() {
-  return `[${tokens.map(item => item.toString()).join(',')}]`;
+  return `[${_tokens.map(item => item.toString()).join(',')}]`;
 }
 
-export function refreshToken(id) {
-  const token = tokens.filter(item => item.getId() === id)[0];
+export async function refreshToken(id) {
+  const token = _tokens.filter(item => item.getId() === id)[0];
   console.log(token);
-  token.getNewToken();
-  console.log(token.getTokenValue());
-  return tokens;
+  await token.getNewToken()
+  return _tokens;
+}
+
+export function checkTokenEquals({ id, name, type, url, method, param = '{}', formatter = 'resp => resp', expCycle = 0, token }) {
+  if (!id && id !== 0) {
+    return false;
+  }
+  const t = _tokens.filter(item => item.getId() === id)[0];
+  if (
+    t.name === name
+    && t.type === type
+    && t.url === url
+    && t.method === method
+    && t.param === param
+    && t.formatter === formatter
+  ) {
+    return true;
+  } else {
+    return false;
+  }
 }
