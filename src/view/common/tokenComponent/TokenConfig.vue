@@ -1,7 +1,7 @@
 <template>
   <div class="token-list">
     <p><span>名称</span><span>TOKEN</span><span>操作</span></p>
-    <p v-for="(token, index) in tokens" :key="index">
+    <p v-for="(token, index) in state.tokens" :key="index">
       <span class="token-value">{{ token.name }}</span>
       <span class="token-value" :title="token.getTokenValue()">{{ token.getTokenValue() }}</span>
       <span class="token-opt">
@@ -60,7 +60,9 @@ import { createToken, updateToken, delToken, getTokens, getTokenById, tokenToJso
 
 export default {
   setup() {
-    const tokens = getTokens();
+    const state = reactive({
+      tokens: getTokens(),
+    });
     const visible = ref(false);
     const title = ref('新增token');
     const form = reactive({
@@ -125,28 +127,26 @@ export default {
     };
     const add = () => {
       if (form.id) {
-        updateToken(form);
+        state.tokens = updateToken(form);
       } else {
         const obj = JSON.parse(JSON.stringify(form));
-        createToken(obj);
+        state.tokens = createToken(obj);
       }
       visible.value = false;
     };
     const del = id => {
-      delToken(id);
+      console.log(id);
+      state.tokens.splice(0, 1, ...delToken(id));
+      console.log(state.tokens);
     };
     const getNewToken = () => {
       add();
-      if (form.id) {
-        const token = tokens.value.filter(item => item.getId() === form.id)[0];
-        token.getNewToken().then(() => {
-          visible.value = false;
-        });
-      }
+      // console.log(form.id)
+      state.tokens = refreshToken(form.id);
     };
-    const toJson = () => `[${tokens.value.map(item => item.toString()).join(',')}]`;
+    const toJson = tokenToJson();
     return {
-      tokens,
+      state,
       visible,
       title,
       form,

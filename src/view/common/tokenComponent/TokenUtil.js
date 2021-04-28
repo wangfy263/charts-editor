@@ -7,7 +7,7 @@ export function createToken({ name, type, url, method, param = {}, formatter = '
     console.error('名称不能为空');
     return null;
   }
-  if (type === 0 && token) {
+  if (type === 0 && !token) {
     console.error('静态token, 值不能为空！');
     return null;
   }
@@ -56,7 +56,7 @@ export function createToken({ name, type, url, method, param = {}, formatter = '
   const id = (Math.random() * 1000).toFixed(0) + new Date().getTime();
   const t = new Token({ id, name, type, url, method, param, formatter, exp, token });
   tokens.push(t);
-  return id;
+  return tokens;
 }
 
 export function updateToken({ id, name, type, url, method, param = {}, formatter = 'resp => resp', expCycle = 0, token }) {
@@ -68,7 +68,7 @@ export function updateToken({ id, name, type, url, method, param = {}, formatter
     console.error('名称不能为空');
     return false;
   }
-  if (type === 0 && token) {
+  if (type === 0 && !token) {
     console.error('静态token, 值不能为空！');
     return false;
   }
@@ -129,7 +129,7 @@ export function updateToken({ id, name, type, url, method, param = {}, formatter
     t.setStaticToken('');
     t.setExpTime(exp);
   }
-  return true;
+  return tokens;
 }
 
 export function delToken(id) {
@@ -138,9 +138,11 @@ export function delToken(id) {
     return false;
   }
   const index = tokens.map(item => item.getId()).indexOf(id);
+  console.log(index);
   if (index >= 0) {
     tokens.splice(index, 1);
   }
+  return tokens;
 }
 
 export function getTokens() {
@@ -158,6 +160,7 @@ export function initTokenStr(tokenJson) {
       const token = new Token(item);
       tokens.push(token);
     });
+    return tokens;
   } catch (e) {
     console.error('tokenJson格式错误！');
   }
@@ -169,5 +172,8 @@ export function tokenToJson() {
 
 export function refreshToken(id) {
   const token = tokens.filter(item => item.getId() === id)[0];
-  token.getNewToken()
+  console.log(token);
+  token.getNewToken();
+  console.log(token.getTokenValue());
+  return tokens;
 }

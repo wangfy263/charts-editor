@@ -14,7 +14,7 @@ export default defineConfig({
     hmr: { overlay: false },
     port: 8009,
     proxy: {
-      '/api': 'http://47.104.199.74:7001',
+      '/test': 'http://47.104.199.74:7001',
     },
   },
   build: {

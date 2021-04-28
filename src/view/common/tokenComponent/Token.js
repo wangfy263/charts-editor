@@ -66,6 +66,7 @@ const Token = function (obj) {
           if (this.method.toLowerCase() === 'get') {
             get(this.url, params).then(res => {
               _token = formatter(res);
+              console.log(_token);
               _expTime = new Date().getTime() + this.expCycle;
               resolve();
             });
