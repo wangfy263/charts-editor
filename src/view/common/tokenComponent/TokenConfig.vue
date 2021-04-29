@@ -148,7 +148,7 @@ export default {
         visible.value = false;
       })
     };
-    const toJson = tokenToJson();
+    const toJson = () => tokenToJson();
     return {
       state,
       visible,

@@ -5,7 +5,7 @@ const Token = function (obj, { request }) {
   }
   const T = (function () {
     let _token = ''; // token值
-    let _expTime = ''; // token失效时间
+    let _expTime = 0; // token失效时间
     let _type = 0; // 0: 静态；1：动态
     let _id = '';
     class Token {
@@ -18,6 +18,9 @@ const Token = function (obj, { request }) {
         this.expCycle = expCycle || 60 * 60 * 1000;
         _id = id;
         _type = type;
+        console.log(expCycle);
+        console.log(this.expCycle);
+        _expTime = new Date().getTime() + expCycle;
         if (type === 0) {
           _expTime = 'never';
           _token = token || '';
@@ -42,6 +45,9 @@ const Token = function (obj, { request }) {
       getToken() {
         return new Promise(resolve => {
           const time = new Date().getTime();
+          console.log(this);
+          console.log('time: ' + time)
+          console.log('expTime: ' + _expTime);
           if (_expTime > time || _expTime === 'never') {
             resolve(_token);
           } else {
@@ -68,7 +74,7 @@ const Token = function (obj, { request }) {
               resolve();
             })
             .catch(e => {
-              // console.error(e);
+              console.error(e);
               console.error('获取token报错');
             });
         });

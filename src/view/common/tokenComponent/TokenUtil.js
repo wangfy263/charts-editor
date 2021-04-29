@@ -3,15 +3,11 @@ import request from './axios-drive';
 
 const _tokens = [];
 
-export function createToken({ name, type, url, method, param = {}, formatter = 'resp => resp', expCycle = 0, token }) {
-  if (!name) {
-    console.error('名称不能为空');
-    return null;
-  }
-  if (type === 0 && !token) {
-    console.error('静态token, 值不能为空！');
-    return null;
-  }
+const drive = {
+  request, // ajax驱动,这里使用的是axios
+};
+
+export function createToken({ name, type, url, method, param = '{}', formatter = 'resp => resp', expCycle = 0, token }) {
   // 静态token, 无需设置param和formatter
   if (type === 0) {
     url = '';
@@ -19,23 +15,6 @@ export function createToken({ name, type, url, method, param = {}, formatter = '
     param = '{}';
     formatter = 'resp => resp';
     expCycle = 0;
-  }
-  // 格式化入参
-  try {
-    if (typeof param === 'string') {
-      JSON.parse(param);
-    }
-  } catch (e) {
-    console.error('参数JSON格式不正确,请检查！');
-    return false;
-  }
-  // 格式化响应处理函数
-  if (typeof formatter === 'string') {
-    const fn = eval(formatter);
-    if (typeof fn !== 'function') {
-      console.error('响应处理函数格式不正确,请检查！');
-      return false;
-    }
   }
   // 超时设置
   let exp = 0;
@@ -48,21 +27,15 @@ export function createToken({ name, type, url, method, param = {}, formatter = '
     } else {
       exp = NaN;
     }
-    // 验证格式
-    if (isNaN(exp)) {
-      console.error('超时时间设置不正确，请检查！');
-      return false;
-    }
-
-    const methods = ['GET', 'POST', 'PUT', 'DELETE'];
-    const m = method.toUpperCase();
-    if (!methods.includes(m)) {
-      console.error('接口调用方式错误,请检查！');
-      return false;
-    }
+  }
+  console.log('exp: ' + exp);
+  if (!checkInParam({ name, type, url, method, param, formatter, exp, token })) {
+    return _tokens;
   }
   const id = (Math.random() * 1000).toFixed(0) + new Date().getTime();
-  const t = new Token({ id, name, type, url, method, param, formatter, exp, token }, { request });
+  const obj = { id, name, type, url, method, param, formatter, token };
+  obj.expCycle = exp;
+  const t = new Token(obj, drive);
   _tokens.push(t);
   return _tokens;
 }
@@ -70,15 +43,7 @@ export function createToken({ name, type, url, method, param = {}, formatter = '
 export function updateToken({ id, name, type, url, method, param = '{}', formatter = 'resp => resp', expCycle = 0, token }) {
   if (!id) {
     console.error('修改token, 必须传id!');
-    return false;
-  }
-  if (!name) {
-    console.error('名称不能为空');
-    return false;
-  }
-  if (type === 0 && !token) {
-    console.error('静态token, 值不能为空！');
-    return false;
+    return _tokens;
   }
   // 静态token, 无需设置param和formatter
   if (type === 0) {
@@ -88,23 +53,6 @@ export function updateToken({ id, name, type, url, method, param = '{}', formatt
     expCycle = 0;
     formatter = resp => resp;
   }
-  // 格式化入参
-  try {
-    if (typeof param === 'string') {
-      JSON.parse(param);
-    }
-  } catch (e) {
-    console.error('参数JSON格式不正确,请检查！');
-    return false;
-  }
-  // 格式化响应处理函数
-  if (typeof formatter === 'string') {
-    const fn = eval(formatter);
-    if (typeof fn !== 'function') {
-      console.error('响应处理函数格式不正确,请检查！');
-      return false;
-    }
-  }
   // 超时设置
   let exp = 0;
   if (type === 1) {
@@ -116,17 +64,9 @@ export function updateToken({ id, name, type, url, method, param = '{}', formatt
     } else {
       exp = NaN;
     }
-    // 验证格式
-    if (isNaN(exp)) {
-      console.error('超时时间设置不正确，请检查！');
-      return false;
-    }
-    const methods = ['GET', 'POST', 'PUT', 'DELETE'];
-    const m = method.toUpperCase();
-    if (!methods.includes(m)) {
-      console.error('接口调用方式错误,请检查！');
-      return false;
-    }
+  }
+  if (!checkInParam({ name, type, url, method, param, formatter, exp, token })) {
+    return _tokens;
   }
   const t = _tokens.filter(item => item.getId() === id)[0];
   t.name = name;
@@ -134,6 +74,7 @@ export function updateToken({ id, name, type, url, method, param = '{}', formatt
   t.method = method;
   t.param = param;
   t.formatter = formatter;
+  t.expCycle = exp;
   t.setType(type);
   if (t.getType() === 0) {
     t.setStaticToken(token);
@@ -141,7 +82,7 @@ export function updateToken({ id, name, type, url, method, param = '{}', formatt
   }
   if (t.getType() === 1) {
     t.setStaticToken('');
-    t.setExpTime(exp);
+    t.setExpTime(new Date().getTime() + exp);
   }
   return _tokens;
 }
@@ -166,12 +107,20 @@ export function getTokenById(id) {
   return _tokens.filter(item => item.getId() === id)[0];
 }
 
+export function getTokenValueById(id) {
+  let t = _tokens.filter(item => item.getId() === id)[0];
+  if (!t) {
+    console.error('token不存在');
+    return Promise.resolve('');
+  }
+  return t.getToken();
+}
+
 export function initTokenStr(tokenJson) {
   try {
     const tokenList = JSON.parse(tokenJson);
     tokenList.forEach(item => {
-      const token = new Token(item);
-      _tokens.push(token);
+      createToken(item);
     });
     return _tokens;
   } catch (e) {
@@ -200,4 +149,56 @@ export function checkTokenEquals({ id, name, type, url, method, param = '{}', fo
   } else {
     return false;
   }
+}
+
+function checkInParam({ name, type, url, method, param, formatter, exp, token }) {
+  if (!name) {
+    console.error('名称不能为空');
+    return false;
+  }
+  if (type === 0 && !token) {
+    console.error('静态token, 值不能为空！');
+    return false;
+  }
+  if (typeof param !== 'object' && typeof param !== 'string') {
+    console.error('参数JSON格式不正确,请检查！');
+    return false;
+  }
+  // 格式化入参
+  try {
+    if (typeof param === 'string') {
+      JSON.parse(param);
+    }
+  } catch (e) {
+    console.error('参数JSON格式不正确,请检查！');
+    return false;
+  }
+  // 格式化响应处理函数
+  if (typeof formatter === 'string') {
+    const fn = eval(formatter);
+    if (typeof fn !== 'function') {
+      console.error('响应处理函数格式不正确,请检查！');
+      return false;
+    }
+  }
+  if (type === 1) {
+    // 验证時間格式
+    if (isNaN(exp)) {
+      console.error('超时时间设置不正确，请检查！');
+      return false;
+    }
+    // 方法类型验证
+    const methods = ['GET', 'POST', 'PUT', 'DELETE'];
+    const m = method.toUpperCase();
+    if (!methods.includes(m)) {
+      console.error('接口调用方式错误,请检查！');
+      return false;
+    }
+    // url
+    if (!url) {
+      console.error('接口地址不能为空!');
+      return false;
+    }
+  }
+  return true;
 }

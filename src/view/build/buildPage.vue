@@ -36,19 +36,6 @@
       <el-aside width="360px">
         <el-form class="page-config-box" ref="form" size="small" style="text-align: left">
           <el-tabs type="border-card" style="height: calc(100% - 2px); overflow: auto">
-            <!-- <el-tab-pane label="页面配置" v-if="active === -1">
-              <el-form-item label="报表名称">
-                <el-input v-model="pageConfig.name" clearable></el-input>
-              </el-form-item>
-              <el-form-item label="报表简介">
-                <el-input type="textarea" v-model="pageConfig.desc"></el-input>
-              </el-form-item>
-              <el-form-item label="背景颜色">
-                <el-input v-model="pageConfig.bgColor">
-                  <template #append><el-color-picker size="mini" show-alpha v-model="pageConfig.bgColor"></el-color-picker></template>
-                </el-input>
-              </el-form-item>
-            </el-tab-pane> -->
             <el-tab-pane label="组件配置" v-if="active !== -1">
               <el-form-item label="图层名称"><el-input v-model="propsObj.activeObj.title"></el-input></el-form-item>
               <component :is="`${propsObj.activeObj.component.name}-config`" v-model:propsObj="propsObj"></component>
@@ -77,8 +64,6 @@ import InterfaceForComp from '@/view/common/interfaceComponent/InterfaceForComp.
 import { ref, reactive, computed, watchEffect, onBeforeUpdate, toRaw, nextTick, provide, inject } from 'vue';
 import { useStore } from 'vuex';
 import { useRoute, useRouter } from 'vue-router';
-import Token from '../common/tokenComponent/Token.js';
-import InterClass from '../common/interfaceComponent/Interface.js';
 
 export default {
   components: {

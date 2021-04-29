@@ -1,12 +1,12 @@
 <template>
   <div class="interface-list">
     <p><span>接口名称</span><span>接口地址</span><span>操作</span></p>
-    <p v-for="(inter, index) in interfaces" :key="index">
+    <p v-for="(inter, index) in state.interfaces" :key="index">
       <span class="Interface-value">{{ inter.name }}</span>
       <span class="Interface-value" :title="inter.url">{{ inter.url }}</span>
       <span class="Interface-opt">
-        <el-button type="text" size="mini" icon="el-icon-edit" @click="toEdit(index)"></el-button>
-        <el-button type="text" size="mini" icon="el-icon-delete" @click="del(index)"></el-button>
+        <el-button type="text" size="mini" icon="el-icon-edit" @click="toEdit(inter.getId())"></el-button>
+        <el-button type="text" size="mini" icon="el-icon-delete" @click="del(inter.getId())"></el-button>
       </span>
     </p>
     <div class="add-Interface"><el-button type="primary" size="medium" class="block" @click="toAdd()">添加接口</el-button></div>
@@ -32,8 +32,8 @@
           </el-form-item>
           <template v-if="form.isUseToken">
             <el-form-item label="选择TOKEN">
-              <el-select v-model="form.tokenId" placeholder="请选择">
-                <el-option v-for="item in tokenList" :key="item.value" :label="item.label" :value="item.value"> </el-option>
+              <el-select v-model="form.tokenId" placeholder="请选择" @visible-change="showSelect">
+                <el-option v-for="item in state.tokens" :key="item.value" :label="item.label" :value="item.value"> </el-option>
               </el-select>
             </el-form-item>
             <el-form-item label="TOKEN传递位置">
@@ -59,23 +59,20 @@
 </template>
 <script>
 import { ref, reactive, computed } from 'vue';
-import { useStore } from 'vuex';
-import InterClass from './Interface.js';
+import { createInterface, updateInterface, delInterface, getInterfaces, getInterfaceById, checkInterfaceEquals, refreshDataById } from './InterUtil';
+import { getTokens } from '../tokenComponent/TokenUtil';
 
 export default {
   setup() {
-    const store = useStore(); // Vuex属性
-    const tokens = computed(() => store.getters.tokens);
-    // eslint-disable-next-line
-    const tokenList = computed(() => {
-      return tokens.value.map(item => {
+    const state = reactive({
+      interfaces: getInterfaces(),
+      tokens: getTokens().map(item => {
         return {
           label: item.name,
           value: item.getId(),
         };
-      });
+      }),
     });
-    const interfaces = computed(() => store.getters.interfaces);
     const methods = reactive([
       {
         label: 'GET',
@@ -104,7 +101,7 @@ export default {
       url: '',
       method: 'get',
       param: '{}',
-      formatter: '(res) => res',
+      formatter: '(resp) => resp',
       isUseToken: false,
       tokenId: '',
       tokenPosition: '',
@@ -127,15 +124,15 @@ export default {
       form.tokenKey = 'Authorization';
     };
 
-    const toEdit = index => {
+    const toEdit = id => {
       title.value = '修改INTERFACE';
       visible.value = true;
-      const inter = interfaces.value[index];
+      const inter = getInterfaceById(id);
       form.id = inter.getId();
       form.name = inter.name;
       form.url = inter.url;
       form.method = inter.method;
-      form.param = JSON.stringify(inter.param);
+      form.param = inter.param;
       form.formatter = inter.formatter;
       form.isUseToken = inter.isUseToken;
       form.tokenId = inter.tokenId;
@@ -145,44 +142,42 @@ export default {
 
     const add = () => {
       if (form.id) {
-        const inter = interfaces.value.filter(item => item.getId() === form.id)[0];
-        inter.name = form.name;
-        inter.url = form.url;
-        inter.method = form.method;
-        inter.param = JSON.parse(form.param);
-        inter.formatter = form.formatter;
-        inter.isUseToken = form.isUseToken;
-        inter.tokenId = form.tokenId;
-        inter.tokenPosition = form.tokenPosition;
-        inter.tokenKey = form.tokenKey;
-        inter.setToken(tokens.value.filter(item => item.getId() === form.tokenId)[0]);
+        state.interfaces = updateInterface(form);
       } else {
         const obj = JSON.parse(JSON.stringify(form));
-        obj.param = JSON.parse(obj.param);
-        obj.id = (Math.random() * 1000).toFixed(0) + new Date().getTime();
-        [obj.token] = tokens.value.filter(item => item.getId() === form.tokenId);
-        const inter = new InterClass(obj);
-        store.commit('ADD_INTERFACE', inter);
+        state.interfaces = createInterface(obj);
       }
       visible.value = false;
     };
 
-    const del = index => {
-      store.commit('DEL_INTERFACE', index);
+    const del = id => {
+      state.interfaces = [];
+      state.interfaces = delInterface(id);
     };
 
     const getNewData = () => {
-      add();
-      if (form.id) {
-        const inter = interfaces.value.filter(item => item.getId() === form.id)[0];
-        inter.queryData().then(() => {
-          visible.value = false;
+      console.log(checkInterfaceEquals(form));
+      if (!checkInterfaceEquals(form)) {
+        updateInterface(form);
+      }
+      refreshDataById(form.id).then(res => {
+        state.interfaces = res;
+        visible.value = false;
+      });
+    };
+
+    const showSelect = param => {
+      if (param) {
+        state.tokens = getTokens().map(item => {
+          return {
+            label: item.name,
+            value: item.getId(),
+          };
         });
       }
     };
-    const toJson = () => `[${interfaces.value.map(item => item.toString()).join(',')}]`;
-
     return {
+      state,
       visible,
       title,
       methods,
@@ -193,9 +188,7 @@ export default {
       add,
       del,
       getNewData,
-      toJson,
-      tokenList,
-      interfaces,
+      showSelect,
     };
   },
 };

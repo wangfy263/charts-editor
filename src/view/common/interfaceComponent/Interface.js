@@ -1,16 +1,17 @@
 /* eslint-disable */
-const Interface = function (obj, { request }) {
+const Interface = function (obj, { request, getTokenValueById }) {
   if (typeof request !== 'function') {
+    return null;
+  }
+  if (typeof getTokenValueById !== 'function') {
     return null;
   }
   const I = (function () {
     let _id = '';
     let _data = null;
-    let _token = null;
     class Interface {
-      constructor({ id, name, url, method, param, formatter, isUseToken, tokenId, tokenPosition, tokenKey, token }) {
+      constructor({ id, name, url, method, param, formatter, isUseToken, tokenId, tokenPosition, tokenKey }) {
         _id = id;
-        _token = token;
         this.name = name;
         this.method = method;
         this.url = url;
@@ -22,9 +23,6 @@ const Interface = function (obj, { request }) {
         this.tokenKey = tokenKey || 'token';
         console.log('initInter：' + id);
       }
-      setToken(token) {
-        _token = token;
-      }
       getId() {
         return _id;
       }
@@ -34,44 +32,42 @@ const Interface = function (obj, { request }) {
           if (str === '{}' && _data) {
             resolve(_data);
           } else {
-            this.queryData(selParams).then(() => {
-              resolve(_data);
-            });
+            this.queryData(selParams)
+              .then(() => {
+                resolve(_data);
+              })
+              .catch(e => {
+                console.error(e);
+                console.error('接口调用异常');
+              });
           }
         });
       }
-      queryData(selParams = {}) {
-        return new Promise((resolve, reject) => {
-          let params = {};
-          const headers = {};
-          const tokenParam = {};
-          const formatter = eval(this.formatter);
-          if (typeof this.param === 'string') {
-            params = JSON.parse(this.param);
-          }
-          // if (typeof this.param === 'object') {
-          //   params = Object.assign({}, this.param);
-          // }
-          let t = null;
-          if (_token) {
-            t = await _token.getToken();
-          }
-          if (this.isUseToken && this.tokenPosition === 'header' && t) {
-            // 获取数据接口在header中传递token
-            headers[this.tokenKey] = t;
-          }
-          if (this.isUseToken && this.tokenPosition === 'query' && t) {
-            // 获取数据接口在参数中传递header
-            tokenParam[this.tokenKey] = t;
-          }
-          request(this.method, this.url, Object.assign({}, params, tokenParam, selParams), headers).then(res => {
-            _data = formatter(res);
-            resolve(_data);
-          }).catch(e => {
-            // console.error(e);
-            console.error('获取token报错');
-          });
-        });
+      async queryData(selParams = {}) {
+        let params = {};
+        const headers = {};
+        const tokenParam = {};
+        const formatter = eval(this.formatter);
+        if (typeof this.param === 'string') {
+          params = JSON.parse(this.param);
+        }
+        if (typeof this.param === 'object') {
+          params = this.param;
+        }
+        let token = '';
+        if (this.isUseToken && this.tokenId) {
+          token = await getTokenValueById(this.tokenId);
+        }
+        if (this.isUseToken && this.tokenPosition === 'header' && token) {
+          // 获取数据接口在header中传递token
+          headers[this.tokenKey] = token;
+        }
+        if (this.isUseToken && this.tokenPosition === 'query' && token) {
+          // 获取数据接口在参数中传递header
+          tokenParam[this.tokenKey] = token;
+        }
+        const res = await request(this.method, this.url, Object.assign({}, params, tokenParam, selParams), headers);
+        return formatter(res);
       }
       toString() {
         const i = {};
