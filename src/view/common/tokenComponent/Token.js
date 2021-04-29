@@ -1,11 +1,8 @@
-import { get, post } from '@/network/api';
 /* eslint-disable */
-const Token = function (obj, option) {
-  // const get = option.get;
-  // const post = option.post;
-  // if (!get && !post && typeof get !== 'function' && typeof post !== 'function') {
-  //   return null;
-  // }
+const Token = function (obj, { request }) {
+  if (typeof request !== 'function') {
+    return null;
+  }
   const T = (function () {
     let _token = ''; // token值
     let _expTime = ''; // token失效时间
@@ -64,30 +61,16 @@ const Token = function (obj, option) {
           if (typeof this.param === 'object') {
             params = Object.assign({}, this.param);
           }
-          if (this.method.toLowerCase() === 'get') {
-            get(this.url, params)
-              .then(res => {
-                _token = formatter(res);
-                _expTime = new Date().getTime() + this.expCycle;
-                resolve();
-              })
-              .catch(e => {
-                console.error(e);
-                console.error('获取token报错');
-              });
-          }
-          if (this.method.toLowerCase() === 'post') {
-            post(this.url, params)
-              .then(res => {
-                _token = formatter(res);
-                _expTime = new Date().getTime() + this.expCycle;
-                resolve();
-              })
-              .catch(e => {
-                console.error(e);
-                console.error('获取token报错');
-              });
-          }
+          request(this.method, this.url, params)
+            .then(res => {
+              _token = formatter(res);
+              _expTime = new Date().getTime() + this.expCycle;
+              resolve();
+            })
+            .catch(e => {
+              // console.error(e);
+              console.error('获取token报错');
+            });
         });
       }
       setStaticToken(token) {

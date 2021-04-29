@@ -1,7 +1,9 @@
-import { get, post } from '@/network/api';
 /* eslint-disable */
-const Interface = function(obj) {
-  const I = (function() {
+const Interface = function (obj, { request }) {
+  if (typeof request !== 'function') {
+    return null;
+  }
+  const I = (function () {
     let _id = '';
     let _data = null;
     let _token = null;
@@ -18,7 +20,7 @@ const Interface = function(obj) {
         this.tokenId = tokenId || '';
         this.tokenPosition = tokenPosition;
         this.tokenKey = tokenKey || 'token';
-        console.log('initInter：'+ id);
+        console.log('initInter：' + id);
       }
       setToken(token) {
         _token = token;
@@ -38,40 +40,38 @@ const Interface = function(obj) {
           }
         });
       }
-      async queryData(selParams = {}) {
-        let params = {};
-        const headers = {};
-        const tokenParam = {};
-        const formatter = this.formatter
-          ? eval(this.formatter)
-          : function(res) {
-              return res;
-            };
-        if (typeof this.param === 'object') {
-          params = Object.assign({}, this.param);
-        }
-        let t = null;
-        if (_token) {
-          t = await _token.getToken();
-        }
-        if (this.isUseToken && this.tokenPosition === 'header' && t) {
-          // 获取数据接口在header中传递token
-          headers[this.tokenKey] = t;
-        }
-        if (this.isUseToken && this.tokenPosition === 'query' && t) {
-          // 获取数据接口在参数中传递header
-          tokenParam[this.tokenKey] = t;
-        }
-        let res = '';
-        if (this.method.toLowerCase() === 'get') {
-          res = await get(this.url, Object.assign(params, tokenParam, selParams), headers);
-          _data = formatter(res);
-        }
-        if (this.method.toLowerCase() === 'post') {
-          res = await post(this.url, Object.assign(params, tokenParam, selParams), headers);
-          _data = formatter(res);
-        }
-        return _data;
+      queryData(selParams = {}) {
+        return new Promise((resolve, reject) => {
+          let params = {};
+          const headers = {};
+          const tokenParam = {};
+          const formatter = eval(this.formatter);
+          if (typeof this.param === 'string') {
+            params = JSON.parse(this.param);
+          }
+          // if (typeof this.param === 'object') {
+          //   params = Object.assign({}, this.param);
+          // }
+          let t = null;
+          if (_token) {
+            t = await _token.getToken();
+          }
+          if (this.isUseToken && this.tokenPosition === 'header' && t) {
+            // 获取数据接口在header中传递token
+            headers[this.tokenKey] = t;
+          }
+          if (this.isUseToken && this.tokenPosition === 'query' && t) {
+            // 获取数据接口在参数中传递header
+            tokenParam[this.tokenKey] = t;
+          }
+          request(this.method, this.url, Object.assign({}, params, tokenParam, selParams), headers).then(res => {
+            _data = formatter(res);
+            resolve(_data);
+          }).catch(e => {
+            // console.error(e);
+            console.error('获取token报错');
+          });
+        });
       }
       toString() {
         const i = {};

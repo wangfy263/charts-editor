@@ -1,4 +1,5 @@
 import Token from './Token';
+import request from './axios-drive';
 
 const _tokens = [];
 
@@ -31,7 +32,7 @@ export function createToken({ name, type, url, method, param = {}, formatter = '
   // 格式化响应处理函数
   if (typeof formatter === 'string') {
     const fn = eval(formatter);
-    if(typeof fn !== 'function') {
+    if (typeof fn !== 'function') {
       console.error('响应处理函数格式不正确,请检查！');
       return false;
     }
@@ -42,19 +43,26 @@ export function createToken({ name, type, url, method, param = {}, formatter = '
     const expCycleType = typeof expCycle;
     if (expCycle === 'never' || expCycleType === 'number') {
       exp = expCycle || 'never'; // 设置为0时，也重置为never.
-    } else if(expCycleType === 'string') {
+    } else if (expCycleType === 'string') {
       exp = parseInt(expCycle, 10);
     } else {
       exp = NaN;
     }
     // 验证格式
-    if(isNaN(exp)) {
+    if (isNaN(exp)) {
       console.error('超时时间设置不正确，请检查！');
+      return false;
+    }
+
+    const methods = ['GET', 'POST', 'PUT', 'DELETE'];
+    const m = method.toUpperCase();
+    if (!methods.includes(m)) {
+      console.error('接口调用方式错误,请检查！');
       return false;
     }
   }
   const id = (Math.random() * 1000).toFixed(0) + new Date().getTime();
-  const t = new Token({ id, name, type, url, method, param, formatter, exp, token });
+  const t = new Token({ id, name, type, url, method, param, formatter, exp, token }, { request });
   _tokens.push(t);
   return _tokens;
 }
@@ -111,6 +119,12 @@ export function updateToken({ id, name, type, url, method, param = '{}', formatt
     // 验证格式
     if (isNaN(exp)) {
       console.error('超时时间设置不正确，请检查！');
+      return false;
+    }
+    const methods = ['GET', 'POST', 'PUT', 'DELETE'];
+    const m = method.toUpperCase();
+    if (!methods.includes(m)) {
+      console.error('接口调用方式错误,请检查！');
       return false;
     }
   }
@@ -172,7 +186,7 @@ export function tokenToJson() {
 export async function refreshToken(id) {
   const token = _tokens.filter(item => item.getId() === id)[0];
   console.log(token);
-  await token.getNewToken()
+  await token.getNewToken();
   return _tokens;
 }
 
@@ -181,14 +195,7 @@ export function checkTokenEquals({ id, name, type, url, method, param = '{}', fo
     return false;
   }
   const t = _tokens.filter(item => item.getId() === id)[0];
-  if (
-    t.name === name
-    && t.type === type
-    && t.url === url
-    && t.method === method
-    && t.param === param
-    && t.formatter === formatter
-  ) {
+  if (t.name === name && t.type === type && t.url === url && t.method === method && t.param === param && t.formatter === formatter) {
     return true;
   } else {
     return false;

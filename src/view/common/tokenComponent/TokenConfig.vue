@@ -135,7 +135,6 @@ export default {
       visible.value = false;
     };
     const del = id => {
-      console.log(id);
       state.tokens = [];
       state.tokens = delToken(id);
     };
