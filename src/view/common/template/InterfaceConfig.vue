@@ -59,8 +59,8 @@
 </template>
 <script>
 import { ref, reactive, computed } from 'vue';
-import { createInterface, updateInterface, delInterface, getInterfaces, getInterfaceById, checkInterfaceEquals, refreshDataById } from './InterUtil';
-import { getTokens } from '../tokenComponent/TokenUtil';
+import { createInterface, updateInterface, delInterface, getInterfaces, getInterfaceById, checkInterfaceEquals, refreshDataById } from '@/libs/interface/InterUtil';
+import { getTokens } from '@/libs/token/TokenUtil';
 
 export default {
   setup() {

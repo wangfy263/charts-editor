@@ -1,5 +1,5 @@
 import Token from './Token';
-import request from './axios-drive';
+import request from '../drive/axios-drive';
 
 const _tokens = [];
 

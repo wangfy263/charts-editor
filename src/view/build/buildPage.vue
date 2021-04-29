@@ -58,9 +58,9 @@
 <script>
 import { ElMessage, ElMessageBox } from 'element-plus';
 // import { v4 as uuidv4 } from 'uuid';
-import TokenConfig from '@/view/common/tokenComponent/TokenConfig.vue';
-import InterfaceConfig from '@/view/common/interfaceComponent/InterfaceConfig.vue';
-import InterfaceForComp from '@/view/common/interfaceComponent/InterfaceForComp.vue';
+import TokenConfig from '@/view/common/template/TokenConfig.vue';
+import InterfaceConfig from '@/view/common/template/InterfaceConfig.vue';
+import InterfaceForComp from '@/view/common/template/InterfaceForComp.vue';
 import { ref, reactive, computed, watchEffect, onBeforeUpdate, toRaw, nextTick, provide, inject } from 'vue';
 import { useStore } from 'vuex';
 import { useRoute, useRouter } from 'vue-router';

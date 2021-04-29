@@ -1,6 +1,6 @@
 import Interface from './Interface';
-import { getTokenValueById } from '../tokenComponent/TokenUtil';
-import request from './axios-drive';
+import request from '../drive/axios-drive';
+import { getTokenValueById } from '../token/TokenUtil';
 
 const interfaces = [];
 
