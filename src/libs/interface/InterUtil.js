@@ -9,11 +9,12 @@ const drive = {
   getTokenValueById,  // 获取token的方法
 };
 
-export function createInterface({name, url, method, param, formatter, isUseToken, tokenId, tokenPosition, tokenKey }) {
+export function createInterface({id, name, url, method, param, formatter, isUseToken, tokenId, tokenPosition, tokenKey }) {
   if (!checkInParam) {
     return interfaces;
   }
-  const id = (Math.random() * 1000).toFixed(0) + new Date().getTime();
+  const nid = (Math.random() * 1000).toFixed(0) + new Date().getTime();
+  id = id || nid;
   const i = new Interface({ id, name, url, method, param, formatter, isUseToken, tokenId, tokenPosition, tokenKey }, drive);
   interfaces.push(i);
   return interfaces;
@@ -98,6 +99,13 @@ export async function refreshDataById(id, selParams) {
   console.log(inter);
   await inter.queryData(selParams);
   return interfaces;
+}
+
+export async function getDataById(id, selParams) {
+  const inter = interfaces.filter(item => item.getId() === id)[0];
+  console.log(inter);
+  const resp = await inter.queryData(selParams);
+  return resp;
 }
 
 function checkInParam({ name, url, method, param, formatter, isUseToken, tokenId, tokenPosition, tokenKey }) {

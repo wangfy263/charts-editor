@@ -7,7 +7,7 @@ const drive = {
   request, // ajax驱动,这里使用的是axios
 };
 
-export function createToken({ name, type, url, method, param = '{}', formatter = 'resp => resp', expCycle = 0, token }) {
+export function createToken({id, name, type, url, method, param = '{}', formatter = 'resp => resp', expCycle = 0, token }) {
   // 静态token, 无需设置param和formatter
   if (type === 0) {
     url = '';
@@ -32,7 +32,8 @@ export function createToken({ name, type, url, method, param = '{}', formatter =
   if (!checkInParam({ name, type, url, method, param, formatter, exp, token })) {
     return _tokens;
   }
-  const id = (Math.random() * 1000).toFixed(0) + new Date().getTime();
+  const nid = (Math.random() * 1000).toFixed(0) + new Date().getTime();
+  id = id || nid;
   const obj = { id, name, type, url, method, param, formatter, token };
   obj.expCycle = exp;
   const t = new Token(obj, drive);

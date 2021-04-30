@@ -55,10 +55,14 @@
 </template>
 <script>
 import { ref, reactive, computed, nextTick } from 'vue';
-import { createToken, updateToken, delToken, getTokens, getTokenById, tokenToJson, refreshToken, checkTokenEquals } from '@/libs/token/TokenUtil';
+import { createToken, updateToken, delToken, getTokens, getTokenById, tokenToJson, refreshToken, checkTokenEquals, initTokenStr } from '@/libs/token/TokenUtil';
 
 export default {
   setup() {
+    const str = `[{"id":"371618913563467","name":"灵石大屏","url":"","method":"get","param":"{}","formatter":"(res) => res","expCycle":3600000,"type":0,"token":"Bearer-eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1NzcxNDk3MDksInVzZXJuYW1lIjoiYWRtaW4ifQ.nIPbEChzi5TwuvpD0ZcfxSlt0u3iK-fDqLO76uWaM38"}]`;
+
+    initTokenStr(str);
+
     const state = reactive({
       tokens: getTokens(),
     });
