@@ -59,11 +59,15 @@
 </template>
 <script>
 import { ref, reactive, computed } from 'vue';
-import { createInterface, updateInterface, delInterface, getInterfaces, getInterfaceById, checkInterfaceEquals, refreshDataById } from '@/utils/interface/InterUtil';
-import { getTokens } from '@/utils/token/TokenUtil';
+import { createInterface, updateInterface, delInterface, getInterfaces, getInterfaceById, checkInterfaceEquals, refreshDataById, initInterfaceStr, getDataById } from '@/libs/interface/InterUtil';
+import { getTokens } from '@/libs/token/TokenUtil';
 
 export default {
   setup() {
+    const str = `[{"id":"5931619238123910","name":"义务教育-学校总数","url":"/api/primaryAndJuniorSchoolCount","method":"get","param":"{}","formatter":"(res) => res.data","isUseToken":true,"tokenId":"371618913563467","tokenPosition":"header","tokenKey":"Authorization"},{"id":"131619238160653","name":"义务教育-学校分类","url":"/api/primaryAndJuniorSchoolCountByType","method":"get","param":"{}","formatter":"(res) => res.data","isUseToken":true,"tokenId":"371618913563467","tokenPosition":"header","tokenKey":"Authorization"},{"id":"3321619238184909","name":"义务教育-学校设施","url":"/api/primaryAndJuniorAreaCount","method":"get","param":"{}","formatter":"(res) => res.data","isUseToken":true,"tokenId":"371618913563467","tokenPosition":"header","tokenKey":"Authorization"},{"id":"3931619238213165","name":"义务教育-设施达标情况","url":"/api/primaryAndJuniorStandardCount","method":"get","param":"{}","formatter":"(res) => res.data","isUseToken":true,"tokenId":"371618913563467","tokenPosition":"header","tokenKey":"Authorization"}]`;
+
+    initInterfaceStr(str);
+
     const state = reactive({
       interfaces: getInterfaces(),
       tokens: getTokens().map(item => {
@@ -73,6 +77,33 @@ export default {
         };
       }),
     });
+    /**  ==========多次调用同一接口的场景测试=========== */
+    // getDataById('3321619238184909', {}).then(res => {
+    //   console.log('null1: ', res);
+    // })
+    // getDataById('3321619238184909', {type: 'primary'}).then(res => {
+    //   console.log('primary1: ', res[0].areaCount);
+    // })
+    // getDataById('3321619238184909', {type: 'junior'}).then(res => {
+    //   console.log('junior1: ', res[0].areaCount);
+    // })
+    // getDataById('3321619238184909', {type: 'junior'}).then(res => {
+    //   console.log('junior2: ', res[0].areaCount);
+    // })
+    // getDataById('3321619238184909', {type: 'junior'}).then(res => {
+    //   console.log('junior3: ', res[0].areaCount);
+    // })
+    // getDataById('3321619238184909', {type: 'primary'}).then(res => {
+    //   console.log('primary2: ', res[0].areaCount);
+    // })
+    // getDataById('3321619238184909', {type: 'junior'}).then(res => {
+    //   console.log('junior4: ', res[0].areaCount);
+    // })
+    // getDataById('3321619238184909', {type: 'primary'}).then(res => {
+    //   console.log('primary3: ', res[0].areaCount);
+    // })
+    /**  ==========多次调用同一接口的场景测试=========== */
+
     const methods = reactive([
       {
         label: 'GET',

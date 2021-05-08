@@ -9,6 +9,7 @@ const Interface = function (obj, { request, getTokenValueById }) {
   const I = (function () {
     let _id = '';
     let _data = null;
+    let _promiseList = [];
     class Interface {
       constructor({ id, name, url, method, param, formatter, isUseToken, tokenId, tokenPosition, tokenKey }) {
         _id = id;
@@ -32,14 +33,37 @@ const Interface = function (obj, { request, getTokenValueById }) {
           if (str === '{}' && _data) {
             resolve(_data);
           } else {
-            this.queryData(selParams)
-              .then(() => {
-                resolve(_data);
+            /** 当同一个页面多个组件公用该接口，并且所使用的入参不相同，也就是说返回的数据不同。
+             *  由于接口响应的时机不同，可能出现前一次调用，但返回却出现在后面的情况
+             *  导致数据出现错乱。
+             *
+             *  这里也不能用防抖函数debounce，因为2次调用，返回数据不同。
+             * 
+             *  为了解决这个问题，使用列表存储调用的promise，记录调用顺序，之后在返回结果中按照调用次数去取结果。
+             *  同时，为了避免这个列表太过庞大，在每次调用完成后，检测此列表中的promise是否全部resolve，全部resolve则清空该列表。
+             */
+            _promiseList.push(this.queryData(selParams));
+            let l = _promiseList.length;
+            Promise.all(_promiseList)
+              .then(resList => {
+                if (l === _promiseList.length) { // 通过检测调用前列表长度和调用后列表长度是否相等，确定此次返回时并没有新增调用，列表中的promise均已resolve，可以清空。
+                  _promiseList = [];
+                }
+                // _data = resList[l - 1];
+                resolve(resList[l - 1]);
               })
               .catch(e => {
                 console.error(e);
                 console.error('接口调用异常');
               });
+            // this.queryData(selParams)
+            //   .then(() => {
+            //     resolve(_data);
+            //   })
+            //   .catch(e => {
+            //     console.error(e);
+            //     console.error('接口调用异常');
+            //   });
           }
         });
       }
