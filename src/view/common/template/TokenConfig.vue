@@ -55,7 +55,7 @@
 </template>
 <script>
 import { ref, reactive, computed, nextTick } from 'vue';
-import { createToken, updateToken, delToken, getTokens, getTokenById, tokenToJson, refreshToken, checkTokenEquals, initTokenStr } from '@/libs/token/TokenUtil';
+import { createToken, updateToken, delToken, getTokens, getTokenById, tokenToJson, refreshToken, checkTokenEquals, initTokenStr } from '../../../../communication/token/TokenUtil';
 
 export default {
   setup() {
