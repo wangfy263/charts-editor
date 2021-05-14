@@ -24,7 +24,9 @@
             :component="element.component"
             :is="'echartsComponent'"
             :dataSource="element.dataSource"
+            :data="element.data"
             :option="element.option"
+            :specialOption="element.specialOption"
           ></component>
         </div>
       </el-main>
