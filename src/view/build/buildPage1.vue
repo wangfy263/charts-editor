@@ -35,7 +35,7 @@
           <el-tabs type="border-card" style="height: calc(100% - 2px); overflow: auto">
             <el-tab-pane label="组件配置" v-if="active !== -1">
               <el-form-item label="图层名称"><el-input v-model="propsObj.activeObj.title"></el-input></el-form-item>
-              <component :is="`${propsObj.activeObj.component.name}-config`" v-model:propsObj="propsObj"></component>
+              <component :is="`${propsObj.activeObj.component.config}`" v-model:propsObj="propsObj"></component>
             </el-tab-pane>
             <el-tab-pane label="接口管理" v-if="active !== -1">
               <InterfaceForComp v-model:propsObj="propsObj" v-on:handleRefresh="handleRefresh"></InterfaceForComp>
@@ -87,10 +87,10 @@ export default {
     };
 
     const checkComp = comp => {
-      console.log(comp);
       active.value = 0;
       element.value = comp;
       propsObj.activeObj = comp;
+      console.log(propsObj.activeObj.component.config);
     };
 
     return {
