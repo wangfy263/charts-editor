@@ -9,7 +9,11 @@
             <el-collapse-item :title="type.name" :name="index" v-for="(type, index) in comps" :key="index">
               <el-row style="height: calc(100%-450px)">
                 <el-col :span="12" v-for="comp in type.components">
-                  <img :src="`../../../components/images/${comp.component.lib}/${comp.component.img}.png`" class="report-icon" @click="checkComp(comp)" />
+                  <img
+                    :src="`../../../components/images/${comp.component.lib}/${comp.component.img}.png`"
+                    class="report-icon"
+                    @click="checkComp(comp)"
+                  />
                   <div class="report-name" @click="checkComp(comp)">{{ comp.label }}</div>
                 </el-col>
               </el-row>
@@ -88,9 +92,14 @@ export default {
 
     const checkComp = comp => {
       active.value = 0;
-      element.value = comp;
-      propsObj.activeObj = comp;
-      console.log(propsObj.activeObj.component.config);
+      // element.value = {};
+      // propsObj.activeObj = {};
+      console.log('---');
+      // nextTick(() => {
+        element.value = comp;
+        propsObj.activeObj = comp;
+        console.log(propsObj.activeObj.component.config);
+      // });
     };
 
     return {
