@@ -44,10 +44,10 @@
             <el-tab-pane label="接口管理" v-if="active !== -1">
               <InterfaceForComp v-model:propsObj="propsObj" v-on:handleRefresh="handleRefresh"></InterfaceForComp>
             </el-tab-pane>
-            <el-tab-pane label="TOKEN">
+            <el-tab-pane label="TOKEN" v-if="active === -1">
               <TokenConfig ref="tokenConf"></TokenConfig>
             </el-tab-pane>
-            <el-tab-pane label="接口">
+            <el-tab-pane label="接口" v-if="active === -1">
               <InterfaceConfig ref="interfaceConf"></InterfaceConfig>
             </el-tab-pane>
           </el-tabs>
@@ -94,11 +94,10 @@ export default {
       active.value = 0;
       // element.value = {};
       // propsObj.activeObj = {};
-      console.log('---');
       // nextTick(() => {
-        element.value = comp;
-        propsObj.activeObj = comp;
-        console.log(propsObj.activeObj.component.config);
+      element.value = comp;
+      propsObj.activeObj = comp;
+      // console.log(propsObj.activeObj.component.config);
       // });
     };
 
