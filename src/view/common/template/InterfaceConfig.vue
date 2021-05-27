@@ -66,7 +66,7 @@ export default {
   setup() {
     const str = `[{"id":"5931619238123910","name":"义务教育-学校总数","url":"/api/primaryAndJuniorSchoolCount","method":"get","param":"{}","formatter":"(res) => res.data","isUseToken":true,"tokenId":"371618913563467","tokenPosition":"header","tokenKey":"Authorization"},{"id":"131619238160653","name":"义务教育-学校分类","url":"/api/primaryAndJuniorSchoolCountByType","method":"get","param":"{}","formatter":"(res) => res.data","isUseToken":true,"tokenId":"371618913563467","tokenPosition":"header","tokenKey":"Authorization"},{"id":"3321619238184909","name":"义务教育-学校设施","url":"/api/primaryAndJuniorAreaCount","method":"get","param":"{}","formatter":"(res) => res.data","isUseToken":true,"tokenId":"371618913563467","tokenPosition":"header","tokenKey":"Authorization"},{"id":"3931619238213165","name":"义务教育-设施达标情况","url":"/api/primaryAndJuniorStandardCount","method":"get","param":"{}","formatter":"(res) => res.data","isUseToken":true,"tokenId":"371618913563467","tokenPosition":"header","tokenKey":"Authorization"}]`;
 
-    initInterfaceStr(str);
+    // initInterfaceStr(str);
 
     const state = reactive({
       interfaces: getInterfaces(),
