@@ -14,7 +14,7 @@
                     class="report-icon"
                     @click="checkComp(comp)"
                   />
-                  <div class="report-name" @click="checkComp(comp)">{{ comp.label }}</div>
+                  <div class="report-name" @click="checkComp(comp)">{{ comp.component.label }}</div>
                 </el-col>
               </el-row>
             </el-collapse-item>
