@@ -8,6 +8,7 @@ import App from './App.vue';
 import router from './router';
 import store from './store';
 import comps from '../components';
+import animated from 'animate.css';
 
 const app = createApp(App);
 // app.config.globalProperties._ = _; // 挂载loadsh
@@ -15,4 +16,5 @@ const app = createApp(App);
 window._ = _;
 app.use(comps);
 app.use(router).use(store).use(ElementPlus);
+app.use(animated);
 app.mount('#app');

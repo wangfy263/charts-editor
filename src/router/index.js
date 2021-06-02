@@ -3,11 +3,8 @@ import { createRouter, createWebHistory } from 'vue-router';
 
 import buildPage from '@/view/build/buildPage.vue';
 import buildPage1 from '@/view/build/buildPage1.vue';
-// import buildApplication from '@/view/build/buildApplication.vue';
-// import pageList from '@/view/build/appList.vue';
-// import preview from '@/view/preview/preview.vue';
-// import iframe from '@/view/preview/iframe.vue';
-// import iframeApp from '@/view/preview/iframeApp.vue';
+import designerBig from '@/view/build/designer-big.vue';
+
 const base = import.meta.env.BASE_URL;
 const router = createRouter({
   history: createWebHistory(base),
@@ -24,6 +21,11 @@ const router = createRouter({
     {
       path: '/page1',
       component: buildPage1,
+      // component: () => import('../view/build/buildPage.vue'),
+    },
+    {
+      path: '/big',
+      component: designerBig,
       // component: () => import('../view/build/buildPage.vue'),
     },
   ],
