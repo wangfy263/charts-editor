@@ -10,14 +10,17 @@
       <el-aside v-if="showComps" width="200px" class="animate__animated animate__fadeInLeft">组件区</el-aside>
       <el-main>
         <el-header height="46">画布工具</el-header>
-        <el-container class="canvas-designer-big"> 画布区域 </el-container>
+        <el-container id="canvas-designer-big">
+          <div><canvas id="ruler-x" :width="boxWidth" height="20"></canvas></div>
+          <div><canvas id="ruler-y" width="20" :height="boxHeight"></canvas></div>
+        </el-container>
       </el-main>
       <el-aside width="300px">配置选项区</el-aside>
     </el-container>
   </el-container>
 </template>
 <script>
-import { ref } from 'vue';
+import { onMounted, ref } from 'vue';
 
 export default {
   setup() {
@@ -31,10 +34,21 @@ export default {
         showComps.value = !showComps.value;
       }
     };
+    let boxWidth = ref(0);
+    let boxHeight = ref(0);
+    onMounted(() => {
+      const box = document.getElementById('canvas-designer-big');
+      console.log(box);
+      boxWidth.value = ref(box.offsetWidth);
+      boxHeight.value = ref(box.offsetHeight);
+    });
+
     return {
       showLayer,
       showComps,
       open,
+      boxWidth,
+      boxHeight,
     };
   },
 };
@@ -42,7 +56,7 @@ export default {
 <style lang="scss" scoped>
 @import '@/assets/font/iconfont/iconfont.css';
 @import '@/assets/css/style.scss';
-.canvas-designer-big {
+#canvas-designer-big {
   height: calc(100% - 50px);
 }
 </style>
