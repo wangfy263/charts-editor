@@ -16,5 +16,5 @@ const app = createApp(App);
 window._ = _;
 app.use(comps);
 app.use(router).use(store).use(ElementPlus);
-app.use(animated);
+// app.use(animated); 
 app.mount('#app');

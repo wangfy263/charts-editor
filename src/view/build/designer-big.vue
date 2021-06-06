@@ -11,8 +11,10 @@
       <el-main>
         <el-header height="46">画布工具</el-header>
         <el-container id="canvas-designer-big">
-          <div><canvas id="ruler-x" :width="boxWidth" height="20"></canvas></div>
-          <div><canvas id="ruler-y" width="20" :height="boxHeight"></canvas></div>
+          <ruler :width="boxWidth" :height="boxHeight">
+            <!-- <div class="editor-area"></div> -->
+            <bigScreenCanvas></bigScreenCanvas>
+          </ruler>
         </el-container>
       </el-main>
       <el-aside width="300px">配置选项区</el-aside>
@@ -20,10 +22,25 @@
   </el-container>
 </template>
 <script>
-import { onMounted, ref } from 'vue';
+import { ref, nextTick } from 'vue';
+import ruler from './ruler/ruler.vue';
+import bigScreenCanvas from './canvas/bigScreen.vue';
 
 export default {
+  components: {
+    ruler,
+    bigScreenCanvas,
+  },
   setup() {
+    let boxWidth = ref(0);
+    let boxHeight = ref(0);
+    const boxResize = () => {
+      nextTick(() => {
+        const box = document.getElementById('canvas-designer-big');
+        boxWidth.value = box.offsetWidth;
+        boxHeight.value = box.offsetHeight;
+      });
+    };
     let showLayer = ref(false);
     let showComps = ref(true);
     const open = n => {
@@ -33,16 +50,9 @@ export default {
       if (n === 2) {
         showComps.value = !showComps.value;
       }
+      boxResize();
     };
-    let boxWidth = ref(0);
-    let boxHeight = ref(0);
-    onMounted(() => {
-      const box = document.getElementById('canvas-designer-big');
-      console.log(box);
-      boxWidth.value = ref(box.offsetWidth);
-      boxHeight.value = ref(box.offsetHeight);
-    });
-
+    boxResize();
     return {
       showLayer,
       showComps,
