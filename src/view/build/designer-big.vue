@@ -23,12 +23,10 @@
 </template>
 <script>
 import { ref, nextTick } from 'vue';
-import ruler from './ruler/ruler.vue';
 import bigScreenCanvas from './canvas/bigScreen.vue';
 
 export default {
   components: {
-    ruler,
     bigScreenCanvas,
   },
   setup() {

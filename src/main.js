@@ -9,12 +9,14 @@ import router from './router';
 import store from './store';
 import comps from '../components';
 import animated from 'animate.css';
+import commonComps from './components';
 
 const app = createApp(App);
 // app.config.globalProperties._ = _; // 挂载loadsh
 // app.provide('_', _);
 window._ = _;
 app.use(comps);
+app.use(commonComps);
 app.use(router).use(store).use(ElementPlus);
 // app.use(animated); 
 app.mount('#app');
