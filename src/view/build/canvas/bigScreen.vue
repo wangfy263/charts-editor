@@ -1,6 +1,8 @@
 <template>
   <div class="editor-area">
-    <div class="comps" @mousedown="handleMousedown" :style="defaultStyle"></div>
+    <Shape @mousedown="handleMousedown" :style="defaultStyle" :defaultStyle="{ width: 50, height: 25}">
+      <div class="comps"></div>
+    </Shape>
   </div>
 </template>
 <script>
@@ -64,7 +66,7 @@ export default {
   height: 100%;
   background: #eee;
   .comps {
-    position: absolute;
+    // position: absolute;
     border: 1px solid #666;
     width: 50px;
     height: 25px;
