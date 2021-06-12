@@ -6,6 +6,6 @@ export default {
   install: app => {
     app.component('SvgIcon', SvgIcon);
     app.component('Ruler', Ruler);
-    app.component('Shape', Shape);
+    app.component('Shape', Shape);    
   }
 }

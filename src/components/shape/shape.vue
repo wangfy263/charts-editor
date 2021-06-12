@@ -1,5 +1,5 @@
 <template>
-  <div class="shape" :class="{ active }">
+  <div class="shape" :class="{ active }" :style="styleSize">
     <div class="shape-point" v-for="item in isActive() ? pointList : []" :key="item" :style="getPointStyle(item)"></div>
     <slot></slot>
   </div>
@@ -23,6 +23,7 @@ export default {
   },
   data() {
     return {
+      styleSize: {},
       pointList: ['lt', 't', 'rt', 'r', 'rb', 'b', 'lb', 'l'], // 八个方向
       initialAngle: {
         // 每个点对应的初始角度
@@ -48,6 +49,16 @@ export default {
       ],
       cursors: {},
     };
+  },
+  computed: {
+    styleSize() {
+      return {
+        left: this.defaultStyle.left,
+        top: this.defaultStyle.top,
+        width: this.defaultStyle.width + 'px',
+        height: this.defaultStyle.height + 'px',
+      }
+    }
   },
   mounted() {},
   methods: {
