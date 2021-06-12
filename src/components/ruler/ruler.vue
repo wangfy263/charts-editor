@@ -5,7 +5,7 @@
         <!-- <svg>
           <use xlink:href="#icon-eye-open" />
         </svg> -->
-        <svgIcon name="eye-open"></svgIcon>
+        <SvgIcon name="eye-open"></SvgIcon>
       </div>
       <canvas id="ruler-x" :width="boxWidth" height="20"></canvas>
     </div>

@@ -11,10 +11,10 @@
       <el-main>
         <el-header height="46">画布工具</el-header>
         <el-container id="canvas-designer-big">
-          <ruler :width="boxWidth" :height="boxHeight">
+          <Ruler :width="boxWidth" :height="boxHeight">
             <!-- <div class="editor-area"></div> -->
             <bigScreenCanvas></bigScreenCanvas>
-          </ruler>
+          </Ruler>
         </el-container>
       </el-main>
       <el-aside width="300px">配置选项区</el-aside>
