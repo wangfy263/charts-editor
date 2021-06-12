@@ -1,7 +1,15 @@
 <template>
   <div class="editor-area">
-    <Shape @mousedown="handleMousedown" :style="defaultStyle" :defaultStyle="{ width: 50, height: 25}">
-      <div class="comps"></div>
+    <Shape v-for="element in elements" @mousedown="handleMousedown" :style="style" :defaultStyle="defaultStyle">
+      <component
+        v-if="element.component"
+        :component="element.component"
+        :is="'echartsComponent'"
+        :dataSource="element.dataSource"
+        :data="element.data"
+        :option="element.option"
+        :specialOption="element.specialOption"
+      ></component>
     </Shape>
   </div>
 </template>
@@ -9,10 +17,18 @@
 import { ref } from 'vue';
 
 export default {
+  props: {
+    elements: {
+      type: Array,
+      default: () => [],
+    },
+  },
   setup() {
     const defaultStyle = ref({
-      top: '10px',
-      left: '10px',
+      top: '0px',
+      left: '0px',
+      width: 200,
+      height: 150,
     });
     const handleMousedown = e => {
       e.stopPropagation();
@@ -65,11 +81,11 @@ export default {
   width: calc(100% - 1px);
   height: 100%;
   background: #eee;
-  .comps {
-    // position: absolute;
-    border: 1px solid #666;
-    width: 50px;
-    height: 25px;
-  }
+  // .comps {
+  //   // position: absolute;
+  //   border: 1px solid #666;
+  //   width: 50px;
+  //   height: 25px;
+  // }
 }
 </style>

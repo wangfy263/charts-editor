@@ -7,13 +7,15 @@
     </el-header>
     <el-container class="chart-components-box">
       <el-aside v-if="showLayer" width="200px" class="animate__animated animate__fadeInLeft">图层区</el-aside>
-      <el-aside v-if="showComps" width="200px" class="animate__animated animate__fadeInLeft">组件区</el-aside>
+      <el-aside v-if="showComps" width="200px" class="animate__animated animate__fadeInLeft">
+        <LeftComps @checkComps="checkComps"></LeftComps>
+      </el-aside>
       <el-main>
         <el-header height="46">画布工具</el-header>
         <el-container id="canvas-designer-big">
           <ruler :width="boxWidth" :height="boxHeight">
             <!-- <div class="editor-area"></div> -->
-            <bigScreenCanvas></bigScreenCanvas>
+            <AreaCanvas :elements="elements"></AreaCanvas>
           </ruler>
         </el-container>
       </el-main>
@@ -22,14 +24,14 @@
   </el-container>
 </template>
 <script>
-import { ref, nextTick } from 'vue';
-import ruler from './ruler/ruler.vue';
-import bigScreenCanvas from './canvas/bigScreen.vue';
+import { ref, reactive, nextTick } from 'vue';
+import AreaCanvas from './areaCanvas.vue';
+import LeftComps from './left-comps.vue';
 
 export default {
   components: {
-    ruler,
-    bigScreenCanvas,
+    AreaCanvas,
+    LeftComps,
   },
   setup() {
     let boxWidth = ref(0);
@@ -41,6 +43,7 @@ export default {
         boxHeight.value = box.offsetHeight;
       });
     };
+    boxResize();
     let showLayer = ref(false);
     let showComps = ref(true);
     const open = n => {
@@ -52,13 +55,21 @@ export default {
       }
       boxResize();
     };
-    boxResize();
+
+    const elements = reactive([]);
+    const checkComps = ele => {
+      console.log(ele);
+      elements.push(ele);
+    }
+
     return {
       showLayer,
       showComps,
       open,
       boxWidth,
       boxHeight,
+      elements,
+      checkComps,
     };
   },
 };

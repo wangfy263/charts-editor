@@ -3,7 +3,7 @@ import { createRouter, createWebHistory } from 'vue-router';
 
 import buildPage from '@/view/build/buildPage.vue';
 import buildPage1 from '@/view/build/buildPage1.vue';
-import designerBig from '@/view/build/designer-big.vue';
+import editorBig from '@/view/editorBig/designer-big.vue';
 
 const base = import.meta.env.BASE_URL;
 const router = createRouter({
@@ -25,7 +25,7 @@ const router = createRouter({
     },
     {
       path: '/big',
-      component: designerBig,
+      component: editorBig,
       // component: () => import('../view/build/buildPage.vue'),
     },
   ],
