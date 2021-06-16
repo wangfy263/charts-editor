@@ -1,5 +1,5 @@
 <template>
-  <div class="shape" :class="{ active }" :style="styleSize">
+  <div :class="defaultStyle.active ? 'shape active' : 'shape'" :style="styleSize">
     <div class="shape-point" v-for="item in isActive() ? pointList : []" :key="item" :style="getPointStyle(item)"></div>
     <slot></slot>
   </div>
@@ -8,22 +8,16 @@
 <script>
 export default {
   props: {
-    active: {
-      type: Boolean,
-      default: true,
-    },
+    // active: {
+    //   type: Boolean,
+    //   default: true,
+    // },
     defaultStyle: {
-      require: true,
       type: Object,
-    },
-    index: {
-      require: true,
-      type: [Number, String],
     },
   },
   data() {
     return {
-      styleSize: {},
       pointList: ['lt', 't', 'rt', 'r', 'rb', 'b', 'lb', 'l'], // 八个方向
       initialAngle: {
         // 每个点对应的初始角度
@@ -60,10 +54,15 @@ export default {
       }
     }
   },
-  mounted() {},
+  mounted() {
+    console.log(this.defaultStyle.active);
+  },
+  updated() {
+    
+  },
   methods: {
     isActive() {
-      return this.active;
+      return this.defaultStyle.active;
     },
     getPointStyle(point) {
       const { width, height } = this.defaultStyle;

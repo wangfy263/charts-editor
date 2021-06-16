@@ -1,6 +1,12 @@
 <template>
   <div class="editor-area">
-    <Shape v-for="element in elements" @mousedown="handleMousedown" :defaultStyle="defaultStyle">
+    <Shape
+      v-for="element in elements"
+      @mousedown="handleMousedown"
+      @click="handleClick(element)"
+      :defaultStyle="element.base"
+      :key="element.base.id"
+    >
       <component
         v-if="element.component"
         :component="element.component"
@@ -9,12 +15,13 @@
         :data="element.data"
         :option="element.option"
         :specialOption="element.specialOption"
+        :id="element.base.id"
       ></component>
     </Shape>
   </div>
 </template>
 <script>
-import { ref } from 'vue';
+import { reactive, computed } from 'vue';
 
 export default {
   props: {
@@ -23,18 +30,24 @@ export default {
       default: () => [],
     },
   },
-  setup() {
-    const defaultStyle = ref({
-      top: '0px',
-      left: '0px',
-      width: 200,
-      height: 150,
-    });
+  setup(props) {
+    const activeComp = computed(() => props.elements.filter(item => item.base.active)[0]);
+    const handleClick = ele => {
+      props.elements.forEach(item => {
+        item.base.active = false;
+      });
+      ele.base.active = true;
+    }
     const handleMousedown = e => {
+      console.log(activeComp.value);
+      if (!activeComp.value) {
+        return;
+      }
       e.stopPropagation();
+      const defaultStyle = activeComp.value.base;
       const startY = e.clientY;
       const startX = e.clientX;
-      const pos = { ...defaultStyle.value };
+      const pos = { ...defaultStyle };
       const startTop = parseInt(pos.top);
       const startLeft = parseInt(pos.left);
 
@@ -51,8 +64,8 @@ export default {
           pos.left = 0;
         }
         // 修改当前组件样式
-        defaultStyle.value.top = pos.top + 'px';
-        defaultStyle.value.left = pos.left + 'px';
+        defaultStyle.top = pos.top + 'px';
+        defaultStyle.left = pos.left + 'px';
         // console.log(defaultStyle);
       };
 
@@ -67,7 +80,8 @@ export default {
     // const handleMousemove = () => {};
     // const handleMouseup = () => {};
     return {
-      defaultStyle,
+      // defaultStyle,
+      handleClick,
       handleMousedown,
       // handleMousemove,
       // handleMouseup,

@@ -25,6 +25,7 @@
 </template>
 <script>
 import { ref, reactive, nextTick } from 'vue';
+import { v4 as uuidv4 } from 'uuid';
 import AreaCanvas from './areaCanvas.vue';
 import LeftComps from './left-comps.vue';
 
@@ -58,9 +59,19 @@ export default {
 
     const elements = reactive([]);
     const checkComps = ele => {
-      console.log(ele);
+      // console.log(ele);
+      ele.base = {
+        active: false,
+        id: uuidv4(),
+        index: elements.length,
+        zIndex: elements.length,
+        top: '0px',
+        left: '0px',
+        width: 200,
+        height: 150,
+      };
       elements.push(ele);
-    }
+    };
 
     return {
       showLayer,
