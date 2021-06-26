@@ -23,7 +23,7 @@ export default {
     const activeCollapse = ref(1);
     const comps = inject('comps');
     const checkComp = comp => {
-      emit('checkComps', comp);
+      emit('checkComps', _.cloneDeep(comp));
     };
     return {
       active,
