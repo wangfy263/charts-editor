@@ -42,8 +42,11 @@ export default {
     const scale = computed(() => props.scale / 100);
     const pageStyle = computed(() => {
       return {
-        width: props.config.width * scale.value + 'px',
-        height: props.config.height * scale.value + 'px',
+        width: props.config.width - 1 + 'px',
+        height: props.config.height + 'px',
+        transform: `scale(${scale.value}, ${scale.value})`,
+        transformOrigin: '0 0',
+        marginLeft: '1px',
       };
     });
 
@@ -75,7 +78,6 @@ export default {
         const currY = moveEvent.clientY;
         pos.top = currY - startY + startTop;
         pos.left = currX - startX + startLeft;
-        // console.log(pos);
         if (pos.top < 0) {
           pos.top = 0;
         }
@@ -83,6 +85,8 @@ export default {
           pos.left = 0;
         }
         // 修改当前组件样式
+        // defaultStyle.top = pos.top * 100 / props.scale + 'px';
+        // defaultStyle.left = pos.left * 100 / props.scale + 'px';
         defaultStyle.top = pos.top + 'px';
         defaultStyle.left = pos.left + 'px';
         // console.log(defaultStyle);
@@ -99,17 +103,8 @@ export default {
     // const handleMousemove = () => {};
     // const handleMouseup = () => {};
 
-    // const elementList = computed(() => {
-    //   const list = _.cloneDeep(props.elements)
-    //   return list.map(item => {
-    //     item.base.width *= scale.value;
-    //     item.base.height *= scale.value;
-    //     return item;
-    //   })
-    // });
     return {
       pageStyle,
-      // elementList,
       handleMousedown,
       // handleMousemove,
       // handleMouseup,

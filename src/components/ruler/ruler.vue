@@ -11,7 +11,9 @@
     </div>
     <div class="box-ruler-y">
       <canvas id="ruler-y" width="20" :height="boxHeight"></canvas>
-      <slot></slot>
+    </div>
+    <div>
+    <slot></slot>
     </div>
   </div>
 </template>
@@ -39,13 +41,15 @@ export default {
     const step = 10;
     const stepScale = computed(() => 10 * scale.value);
     const multiple = 5;
-    const boxWidth = computed(() => props.width - 24);
-    const boxHeight = computed(() => props.height - 24);
+    const boxWidth = computed(() => props.width);
+    const boxHeight = computed(() => props.height);
 
     const render = () => {
       // console.log(stepScale.value);
       // console.log(scale.value);
       // nextTick(() => {});
+      console.log(boxWidth.value);
+      console.log(boxHeight.value);
       const canX = document.getElementById('ruler-x');
       const canY = document.getElementById('ruler-y');
       const contextX = canX.getContext('2d');
@@ -56,7 +60,7 @@ export default {
       let x = 0;
       let xText = 0;
       let index = 0;
-      while (x < boxWidth.value) {
+      while (x <= boxWidth.value) {
         contextX.moveTo(x, 0);
         if (index % multiple === 0 || index === 0) {
           contextX.lineTo(x, 12);
@@ -79,7 +83,7 @@ export default {
       let y = 0;
       let yText = 0;
       index = 0;
-      while (y < boxHeight.value) {
+      while (y <= boxHeight.value) {
         contextY.moveTo(0, y);
         if (index % multiple === 0 || index === 0) {
           contextY.lineTo(12, y);
@@ -117,10 +121,14 @@ export default {
 </script>
 <style lang="scss" scoped>
 .box-canvas {
+  width:inherit;
+  height: inherit;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  flex-wrap: wrap;
   border-top: 1px solid #999;
   border-left: 1px solid #999;
+  // overflow: auto;
   .box-ruler-x {
     // margin-left: 22px;
     display: flex;
@@ -135,8 +143,7 @@ export default {
     }
   }
   .box-ruler-y {
-    display: flex;
-    flex-direction: row;
+    width: 20px;
     canvas {
       border-right: 1px solid #666;
     }

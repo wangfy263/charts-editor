@@ -10,10 +10,14 @@
       <el-aside v-if="showComps" width="200px" class="animate__animated animate__fadeInLeft">
         <LeftComps @checkComps="checkComps"></LeftComps>
       </el-aside>
-      <el-main>
+      <el-main :style="style">
         <el-header height="46"> 缩放比例：<el-input-number size="mini" v-model="num" :step="5"></el-input-number> </el-header>
         <el-container id="canvas-designer-big">
-          <Ruler :width="config.width > boxWidth ? config.width : boxWidth" :height="config.height > boxHeight ? config.height : boxHeight" :scale="num">
+          <Ruler
+            :width="config.width > boxWidth ? config.width : boxWidth"
+            :height="config.height > boxHeight ? config.height : boxHeight"
+            :scale="num"
+          >
             <!-- <div class="editor-area"></div> -->
             <AreaCanvas v-model:elements="elements" :scale="num" :config="config"></AreaCanvas>
           </Ruler>
@@ -99,7 +103,7 @@ export default {
     const config = ref({
       width: 1200,
       height: 700,
-    })
+    });
 
     /* 画布中组件列表 */
     const active = ref(false);
@@ -135,6 +139,14 @@ export default {
         active.value = false;
       }
     });
+    const style = computed(() => {
+      const w = (showLayer ? 1 : 0) + (showComps ? 1 : 0);
+      return {
+        width: `calc(100% - ${200*w}px - 300px)`,
+        height: '100%',
+        overflow: 'hidden',
+      }
+    })
     return {
       num: ref(100),
       showLayer,
@@ -148,6 +160,7 @@ export default {
       propsObj,
       active,
       handleRefresh,
+      style,
     };
   },
 };
@@ -157,6 +170,9 @@ export default {
 @import '@/assets/css/style.scss';
 #canvas-designer-big {
   height: calc(100% - 55px);
+  // height: inherit;
+  // width: inherit;
+  overflow: auto;
 }
 .page-config-box {
   text-align: left;
