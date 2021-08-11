@@ -1,8 +1,9 @@
 <template>
   <div class="editor-area">
-    <Shape v-for="element in elements" @mousedown="handleMousedown" :defaultStyle="defaultStyle">
+    <Shape v-for="element in elements" @mousedown="handleMousedown" v-model:defaultStyle="element.base">
       <component
         v-if="element.component"
+        :id="element.base.id"
         :component="element.component"
         :is="'echartsComponent'"
         :dataSource="element.dataSource"
@@ -24,12 +25,8 @@ export default {
     },
   },
   setup() {
-    const defaultStyle = ref({
-      top: '0px',
-      left: '0px',
-      width: 200,
-      height: 150,
-    });
+    const activeComp = ref({});
+
     const handleMousedown = e => {
       e.stopPropagation();
       const startY = e.clientY;
@@ -67,7 +64,7 @@ export default {
     // const handleMousemove = () => {};
     // const handleMouseup = () => {};
     return {
-      defaultStyle,
+      // defaultStyle,
       handleMousedown,
       // handleMousemove,
       // handleMouseup,
@@ -81,11 +78,5 @@ export default {
   width: calc(100% - 1px);
   height: 100%;
   background: #eee;
-  // .comps {
-  //   // position: absolute;
-  //   border: 1px solid #666;
-  //   width: 50px;
-  //   height: 25px;
-  // }
 }
 </style>
