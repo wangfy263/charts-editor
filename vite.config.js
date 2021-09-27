@@ -17,6 +17,7 @@ export default defineConfig({
     proxy: {
       '/test': 'http://47.104.199.74:7001',
       '/api': 'http://220.194.160.6:38082',
+      '/wz': 'https://img02.mysteelcdn.com',
     },
   },
   build: {

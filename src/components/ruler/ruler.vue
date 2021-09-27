@@ -5,7 +5,7 @@
         <!-- <svg>
           <use xlink:href="#icon-eye-open" />
         </svg> -->
-        <SvgIcon name="eye-open"></SvgIcon>
+        <SvgIcon name="eye-open" style="margin-bottom: 5px"></SvgIcon>
       </div>
       <canvas id="ruler-x" :width="boxWidth" height="20"></canvas>
     </div>
@@ -21,6 +21,10 @@ import { scaleLinear } from 'd3-scale';
 
 export default {
   props: {
+    scale: {
+      type: Number,
+      default: 100,
+    },
     width: {
       type: Number,
       default: 0,
@@ -31,72 +35,79 @@ export default {
     },
   },
   setup(props) {
+    const scale = computed(() => props.scale / 100);
     const step = 10;
+    const stepScale = computed(() => 10 * scale.value);
     const multiple = 5;
     const boxWidth = computed(() => props.width - 24);
     const boxHeight = computed(() => props.height - 24);
-    const render = () => {
-      // console.log(boxWidth);
-      // console.log(boxHeight);
-      nextTick(() => {
-        const canX = document.getElementById('ruler-x');
-        const canY = document.getElementById('ruler-y');
-        const contextX = canX.getContext('2d');
-        const contextY = canY.getContext('2d');
-        contextX.beginPath();
-        let x = 0;
-        let index = 0;
-        while (x < boxWidth.value) {
-          contextX.moveTo(x, 0);
-          if (index % multiple === 0 || index === 0) {
-            contextX.lineTo(x, 12);
-            contextX.font = '9px "微软雅黑"';
-            contextX.textAlign = 'left';
-            contextX.textBaseline = 'top';
-            contextX.fillText(x, x + 1, 11);
-          } else {
-            contextX.lineTo(x, 8);
-          }
-          x += step;
-          index += 1;
-        }
-        contextX.strokeStyle = '#333';
-        contextX.lineWidth = 1;
-        contextX.stroke();
 
-        // contextY.beginPath();
-        let y = 0;
-        index = 0;
-        while (y < boxHeight.value) {
-          contextX.beginPath();
-          contextY.moveTo(0, y);
-          if (index % multiple === 0 || index === 0) {
-            contextY.lineTo(12, y);
-            contextY.strokeStyle = '#333';
-            contextY.lineWidth = 1;
-            contextY.stroke();
-            contextY.font = '9px "微软雅黑"';
-            contextY.textAlign = 'center';
-            contextY.textBaseline = 'top';
-            // contextY.translate(12, y);
-            // contextY.rotate((Math.PI / 180) * 90);
-            contextY.fillText(y, 12, y + 2);
-            // contextY.rotate((Math.PI / 180) * -90);
-            // contextY.translate(-12, -y);
-          } else {
-            contextY.lineTo(8, y);
-            contextY.strokeStyle = '#333';
-            contextY.lineWidth = 1;
-            contextY.stroke();
-          }
-          y += step;
-          index += 1;
+    const render = () => {
+      // console.log(stepScale.value);
+      // console.log(scale.value);
+      // nextTick(() => {});
+      const canX = document.getElementById('ruler-x');
+      const canY = document.getElementById('ruler-y');
+      const contextX = canX.getContext('2d');
+      const contextY = canY.getContext('2d');
+      contextX.clearRect(0, 0, canX.width, canX.height);
+      contextY.clearRect(0, 0, canY.width, canY.height);
+      contextX.beginPath();
+      let x = 0;
+      let xText = 0;
+      let index = 0;
+      while (x < boxWidth.value) {
+        contextX.moveTo(x, 0);
+        if (index % multiple === 0 || index === 0) {
+          contextX.lineTo(x, 12);
+          contextX.font = '9px "微软雅黑"';
+          contextX.textAlign = 'left';
+          contextX.textBaseline = 'top';
+          contextX.fillText(xText, x + 1, 11);
+        } else {
+          contextX.lineTo(x, 8);
         }
-      });
+        x += stepScale.value;
+        xText += step;
+        index += 1;
+      }
+      contextX.strokeStyle = '#333';
+      contextX.lineWidth = 1;
+      contextX.stroke();
+
+      contextY.beginPath();
+      let y = 0;
+      let yText = 0;
+      index = 0;
+      while (y < boxHeight.value) {
+        contextY.moveTo(0, y);
+        if (index % multiple === 0 || index === 0) {
+          contextY.lineTo(12, y);
+          contextY.font = '9px "微软雅黑"';
+          contextY.textAlign = 'center';
+          contextY.textBaseline = 'top';
+          // contextY.translate(12, y);
+          // contextY.rotate((Math.PI / 180) * 90);
+          contextY.fillText(yText, 12, y + 2);
+          // contextY.rotate((Math.PI / 180) * -90);
+          // contextY.translate(-12, -y);
+        } else {
+          contextY.lineTo(8, y);
+        }
+        y += stepScale.value;
+        yText += step;
+        index += 1;
+      }
+      contextY.strokeStyle = '#333';
+      contextY.lineWidth = 1;
+      contextY.stroke();
     };
-    watch(boxWidth, () => {
+    watch(scale, () => {
       render();
     });
+    setTimeout(() => {
+      render();
+    }, 0);
     return {
       boxWidth,
       boxHeight,
